@@ -1,0 +1,30 @@
+Step 1: Cài đăt MySQL
+Follow theo link https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04 
+  1.1 sudo apt update
+  1.2 sudo apt install mysql-server
+  1.3 sudo systemctl start mysql.service
+  1.4 sudo mysql
+  1.5 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+  1.6 exit
+  1.7 mysql -u root -p ( tăng cường bảo mật, không quay lại auth_socket, có thể thay thế bằng mysql -u tênuser -h localhost -P 8888 airflow_db -p lúc chạy xong 1.10 để tránh lỗi )
+  1.8 sudo mysql_secure_installation
+  1.9 yes yes yes yes
+  1.10 CREATE USER 'linhai'@'localhost' IDENTIFIED WITH mysql_native_password BY 'yourpassword'; ( tạo user tên linhai )
+  1.11 GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'linhai'@'localhost' WITH GRANT OPTION; (Cấp mọi quyền ở mọi database cho linhai, có thể custom lại cấp quyền cho từng db riêng biệt)
+  1.12  mysql -u tênuser -h localhost -P 8888 airflow_db -p **
+
+Step 2: Cài đặt trong Airflow
+Follow theo https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html#setting-up-a-mysql-database
+  2.1 CREATE DATABASE airflow_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  2.2 CREATE USER 'airflow_user' IDENTIFIED BY 'airflow_pass';
+      GRANT ALL PRIVILEGES ON airflow_db.* TO 'airflow_user';
+      => Tạo user và cấp quyền cho user đó tại bảng airflow_db. Làm hoặc k vì đã tạo user linhai với đầy đủ các quyền rồi
+  2.3 airflow.cfg
+  2.3.1 executor = LocalExecutor
+        sql_alchemy_schema = airflow_db #Tên db tạo
+        sql_alchemy_conn = mysql+mysqldb://linhai:linhai@localhost:8888/airflow_db #mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>
+  2.4 Fix lỗi, sẽ xuất hiện lỗi không tồn tại mySQLDb
+  2.4.1  sudo apt-get install libmysqlclient-dev
+  2.4.2 pip install mysqlclient
+  
+ DONE!
