@@ -1,4 +1,5 @@
 Step 1: Cài đăt MySQL
+Xóa tại link: https://askubuntu.com/questions/172514/how-do-i-uninstall-mysql
 Follow theo link https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04 
   1.1 sudo apt update
   1.2 sudo apt install mysql-server
